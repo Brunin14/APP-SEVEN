@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "SEVEN +",
+    "slug": "meu-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "SEVEN +",
+    "splash": {
+      "image": "./assets/Logo-Esticada.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F4C81"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.seuusuario.meuapp"
+    },
+    "android": {
+      "adaptiveIcon": {
+      },
+      "package": "com.seuusuario.meuapp"
+    },
+    "web": {},
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O aplicativo precisa de acesso à sua galeria para que você possa escolher uma foto de perfil.",
+          "cameraPermission": "O aplicativo precisa de acesso à sua câmera para que você possa tirar uma nova foto de perfil."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "389e3a2a-1432-4772-bde2-7077bc632da0"
+      }
+    }
+  }
+}
