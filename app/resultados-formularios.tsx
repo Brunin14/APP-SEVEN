@@ -20,7 +20,6 @@ import { useRouter } from "expo-router";
 
 const API_URL = "https://api.sevenplus-app.com.br/api";
 
-// Tipagem completa baseada na sua API
 type FormularioResultado = {
   id: number;
   cnpj: string;
@@ -64,7 +63,16 @@ type FormularioResultado = {
   created_at?: string;
 };
 
-// Componente para renderizar uma linha de detalhe no Modal
+type BuscarFormulariosResponse = {
+  data: FormularioResultado[];
+  pagination: {
+    totalItems: number;
+    totalPages: number;
+    currentPage: number;
+  };
+};
+
+// ---- Componentes auxiliares (iguais ao seu código) ----
 const DetailRow = ({ label, value }: { label: string; value: any }) => {
   const displayValue = value || "Não informado";
   return (
@@ -75,12 +83,12 @@ const DetailRow = ({ label, value }: { label: string; value: any }) => {
   );
 };
 
-// Componente para renderizar um JSON como lista de forma limpa
 const JsonDetailList = ({ label, jsonString }: { label: string; jsonString: string | null | undefined }) => {
-  let items = [];
+  let items: any[] = [];
   try {
     if (jsonString) items = JSON.parse(jsonString);
   } catch (e) {
+    console.log(e);
     return <DetailRow label={label} value="Dado em formato inválido" />;
   }
 
@@ -88,9 +96,7 @@ const JsonDetailList = ({ label, jsonString }: { label: string; jsonString: stri
     return <DetailRow label={label} value="Nenhum item informado" />;
   }
 
-  const formatKey = (key: string) => {
-    return key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
-  };
+  const formatKey = (key: string) => key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, " ");
 
   return (
     <View style={styles.detailRow}>
@@ -98,10 +104,10 @@ const JsonDetailList = ({ label, jsonString }: { label: string; jsonString: stri
       {items.map((item, index) => (
         <View key={index} style={styles.jsonItemContainer}>
           {Object.entries(item).map(([key, value]) => {
-            if (key.toLowerCase() === 'id') return null; // Oculta o campo ID
+            if (key.toLowerCase() === "id") return null;
             return (
               <Text key={key} style={styles.jsonItemText}>
-                <Text style={{ fontWeight: '500' }}>{formatKey(key)}:</Text> {String(value)}
+                <Text style={{ fontWeight: "500" }}>{formatKey(key)}:</Text> {String(value)}
               </Text>
             );
           })}
@@ -111,13 +117,19 @@ const JsonDetailList = ({ label, jsonString }: { label: string; jsonString: stri
   );
 };
 
-// Componente do Modal para exibir todos os detalhes
-const DetailsModal = ({ visible, onClose, item, onDelete }: { visible: boolean; onClose: () => void; item: FormularioResultado | null; onDelete: (id: number) => void; }) => {
+const DetailsModal = ({
+  visible, onClose, item, onDelete,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  item: FormularioResultado | null;
+  onDelete: (id: number) => void;
+}) => {
   if (!item) return null;
 
   const handleDeletePress = () => {
-    onClose(); // Fecha o modal antes de mostrar o alerta
-    setTimeout(() => onDelete(item.id), 500); // Adiciona um pequeno delay
+    onClose();
+    setTimeout(() => onDelete(item.id), 500);
   };
 
   return (
@@ -126,7 +138,7 @@ const DetailsModal = ({ visible, onClose, item, onDelete }: { visible: boolean; 
         <View style={styles.modalContainer}>
           <ScrollView contentContainerStyle={styles.modalScrollView}>
             <Text style={styles.modalTitle}>{item.pgr_razao_social}</Text>
-            
+
             <Text style={styles.modalSectionTitle}>Informações Gerais</Text>
             <DetailRow label="CNPJ" value={item.cnpj} />
             <DetailRow label="Endereço" value={item.endereco} />
@@ -151,7 +163,7 @@ const DetailsModal = ({ visible, onClose, item, onDelete }: { visible: boolean; 
             <JsonDetailList label="Características dos Resíduos" jsonString={item.caracteristicasResiduos} />
             <DetailRow label="EPIs para Transporte" value={item.epis_transporte} />
             <DetailRow label="Local do Abrigo" value={item.abrigo_residuos_localizacao} />
-            
+
             <Text style={styles.modalSectionTitle}>Restaurante</Text>
             <DetailRow label="Possui Restaurante" value={item.possui_restaurante} />
             <DetailRow label="Tipo de Restaurante" value={item.restaurante_tipo} />
@@ -164,7 +176,7 @@ const DetailsModal = ({ visible, onClose, item, onDelete }: { visible: boolean; 
 
             <Text style={styles.modalSectionTitle}>Serviços de Terceiros</Text>
             <DetailRow label="Realiza Dedetização" value={item.realiza_dedetizacao} />
-            <DetailRow label="Empresa Dedetização" value={`${item.dedetizacao_razao_social} (${item.dedetizacao_cnpj || 'CNPJ não inf.'})`} />
+            <DetailRow label="Empresa Dedetização" value={`${item.dedetizacao_razao_social} (${item.dedetizacao_cnpj || "CNPJ não inf."})`} />
             <DetailRow label="Frequência Dedetização" value={item.dedetizacao_frequencia} />
             <DetailRow label="Realiza Limpeza Caixa d'Água" value={item.realiza_limpeza_caixa_dagua} />
             <DetailRow label="Empresa Limpeza" value={item.limpeza_caixa_dagua_cnpj} />
@@ -174,15 +186,15 @@ const DetailsModal = ({ visible, onClose, item, onDelete }: { visible: boolean; 
             <DetailRow label="Caixas d'Água são Fechadas" value={item.caixas_dagua_fechadas} />
             <DetailRow label="Abastecimento de Água" value={item.abastecimento_agua} />
             <DetailRow label="Esgoto Sanitário" value={item.esgoto_sanitario} />
-
           </ScrollView>
+
           <View style={styles.modalButtonContainer}>
             <TouchableOpacity style={styles.modalDeleteButton} onPress={handleDeletePress}>
-                <FontAwesome name="trash" size={18} color="#B91C1C" />
-                <Text style={styles.modalDeleteButtonText}>Excluir</Text>
+              <FontAwesome name="trash" size={18} color="#B91C1C" />
+              <Text style={styles.modalDeleteButtonText}>Excluir</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.modalCloseButton} onPress={onClose}>
-                <Text style={styles.modalCloseButtonText}>Fechar</Text>
+              <Text style={styles.modalCloseButtonText}>Fechar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -190,7 +202,6 @@ const DetailsModal = ({ visible, onClose, item, onDelete }: { visible: boolean; 
     </Modal>
   );
 };
-
 
 export default function ResultadosFormulariosScreen() {
   const insets = useSafeAreaInsets();
@@ -201,12 +212,19 @@ export default function ResultadosFormulariosScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedItem, setSelectedItem] = useState<FormularioResultado | null>(null);
 
+  // (opcional) estado para paginação
+  const [pagination, setPagination] = useState<{ totalItems: number; totalPages: number; currentPage: number } | null>(null);
+
   const fetchResultados = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/formularios`);
       if (!res.ok) throw new Error("Falha ao carregar os dados.");
-      const data = await res.json();
-      setResultados(data);
+      const payload: BuscarFormulariosResponse = await res.json();
+
+      // ⬇️ pegue o array no payload.data (não o objeto inteiro)
+      const arr = Array.isArray(payload?.data) ? payload.data : [];
+      setResultados(arr);
+      setPagination(payload?.pagination ?? null);
     } catch (err) {
       console.error("Erro ao carregar formulários:", err);
       Alert.alert("Erro", "Não foi possível carregar os resultados.");
@@ -236,6 +254,7 @@ export default function ResultadosFormulariosScreen() {
           style: "destructive",
           onPress: async () => {
             try {
+              // ⚠️ Se sua API tiver outro path, ajuste aqui:
               const res = await fetch(`${API_URL}/formulario/${id}`, { method: "DELETE" });
               if (!res.ok) throw new Error("Falha ao deletar.");
               setResultados(prev => prev.filter(item => item.id !== id));
@@ -252,7 +271,7 @@ export default function ResultadosFormulariosScreen() {
 
   const renderItem = ({ item }: { item: FormularioResultado }) => (
     <View style={styles.cardShadow}>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.card}
         onPress={() => setSelectedItem(item)}
         activeOpacity={0.8}
@@ -286,14 +305,14 @@ export default function ResultadosFormulariosScreen() {
       </View>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#0F4C81" style={{ marginTop: 20 }}/>
+        <ActivityIndicator size="large" color="#0F4C81" style={{ marginTop: 20 }} />
       ) : (
         <FlatList
           data={resultados}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16 }}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0F4C81"/>}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0F4C81" />}
           ListEmptyComponent={() => (
             <View style={styles.emptyContainer}>
               <FontAwesome name="inbox" size={40} color="#94a3b8" />
@@ -303,10 +322,10 @@ export default function ResultadosFormulariosScreen() {
           )}
         />
       )}
-      
-      <DetailsModal 
-        visible={!!selectedItem} 
-        onClose={() => setSelectedItem(null)} 
+
+      <DetailsModal
+        visible={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
         item={selectedItem}
         onDelete={handleDelete}
       />
@@ -314,8 +333,8 @@ export default function ResultadosFormulariosScreen() {
   );
 }
 
+// ---- estilos (iguais ao seu código, mantive) ----
 const CARD_RADIUS = 18;
-
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: "#E5E5E5" },
   header: {
@@ -345,61 +364,17 @@ const styles = StyleSheet.create({
   cardSubtitle: { fontSize: 14, color: '#6B7280' },
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalContainer: { backgroundColor: 'white', height: '85%', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 16 },
-  modalScrollView: { paddingBottom: 80 }, // Espaço para os botões
+  modalScrollView: { paddingBottom: 80 },
   modalTitle: { fontSize: 22, fontWeight: '800', color: '#1E3A8A', marginBottom: 16, textAlign: 'center' },
   modalSectionTitle: { fontSize: 18, fontWeight: '700', color: '#1f2937', marginTop: 20, marginBottom: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB', paddingBottom: 4 },
   detailRow: { marginBottom: 10 },
   detailLabel: { fontWeight: 'bold', color: '#4B5563', fontSize: 15, marginBottom: 2 },
   detailText: { color: '#374151', fontSize: 15, flexWrap: 'wrap' },
-  jsonItemContainer: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 8,
-    padding: 10,
-    marginTop: 5,
-  },
-  jsonItemText: {
-    color: '#374151',
-    fontSize: 14,
-  },
-  modalButtonContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    padding: 16,
-    paddingBottom: 24,
-    backgroundColor: 'white',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-  },
-  modalDeleteButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    backgroundColor: '#FEE2E2',
-    borderRadius: 12,
-    paddingVertical: 14,
-    marginRight: 8,
-  },
-  modalDeleteButtonText: {
-    color: '#B91C1C',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  modalCloseButton: {
-    flex: 1,
-    backgroundColor: '#1E3A8A',
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginLeft: 8,
-  },
-  modalCloseButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '700',
-  },
+  jsonItemContainer: { backgroundColor: '#F3F4F6', borderRadius: 8, padding: 10, marginTop: 5 },
+  jsonItemText: { color: '#374151', fontSize: 14 },
+  modalButtonContainer: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', padding: 16, paddingBottom: 24, backgroundColor: 'white', borderTopWidth: 1, borderTopColor: '#E5E7EB' },
+  modalDeleteButton: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#FEE2E2', borderRadius: 12, paddingVertical: 14, marginRight: 8 },
+  modalDeleteButtonText: { color: '#B91C1C', fontSize: 16, fontWeight: '700' },
+  modalCloseButton: { flex: 1, backgroundColor: '#1E3A8A', borderRadius: 12, paddingVertical: 14, alignItems: 'center', marginLeft: 8 },
+  modalCloseButtonText: { color: 'white', fontSize: 16, fontWeight: '700' },
 });

@@ -1,29 +1,48 @@
 {
   "expo": {
     "name": "SEVEN +",
-    "slug": "meu-app",
+    "slug": "MeuApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "scheme": "SEVEN +",
+
+
+    "scheme": "sevenplus",
+
+
+    "icon": "./assets/logoseven.png",
+
     "splash": {
-      "image": "./assets/Logo-Esticada.png",
+
+      "image": "./assets/LogoHorizontal(Branco)(1).png",
       "resizeMode": "contain",
       "backgroundColor": "#0F4C81"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+
+    "assetBundlePatterns": ["**/*"],
+
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.seuusuario.meuapp"
+
     },
+
     "android": {
+      "package": "com.seuusuario.meuapp",
+
+
+      "icon": "./assets/icon-android.png",
+
+
       "adaptiveIcon": {
-      },
-      "package": "com.seuusuario.meuapp"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0F4C81",
+        "monochromeImage": "./assets/adaptive-icon-monochrome.png"
+      }
     },
+
     "web": {},
+
     "plugins": [
       [
         "expo-image-picker",
@@ -33,6 +52,7 @@
         }
       ]
     ],
+
     "extra": {
       "eas": {
         "projectId": "389e3a2a-1432-4772-bde2-7077bc632da0"
