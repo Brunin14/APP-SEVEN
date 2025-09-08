@@ -31,13 +31,13 @@
       "package": "com.seuusuario.meuapp",
 
 
-      "icon": "./assets/icon-android.png",
+      "icon": "./assets/logoseven.png",
 
 
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logoseven.png",
         "backgroundColor": "#0F4C81",
-        "monochromeImage": "./assets/adaptive-icon-monochrome.png"
+        "monochromeImage": "./assets/logoseven.png"
       }
     },
 
