@@ -5,44 +5,30 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-
-
     "scheme": "sevenplus",
-
-
     "icon": "./assets/logoseven.png",
-
     "splash": {
-
       "image": "./assets/LogoHorizontal(Branco)(1).png",
       "resizeMode": "contain",
       "backgroundColor": "#0F4C81"
     },
-
-    "assetBundlePatterns": ["**/*"],
-
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.seuusuario.meuapp"
-
     },
-
     "android": {
-      "package": "com.seuusuario.meuapp",
-
-
-      "icon": "./assets/logoseven.png",
-
-
+      "package": "com.seven.meuapp",
+      "icon": "./assets/iconeApp.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/logoseven.png",
         "backgroundColor": "#0F4C81",
         "monochromeImage": "./assets/logoseven.png"
       }
     },
-
     "web": {},
-
     "plugins": [
       [
         "expo-image-picker",
@@ -50,9 +36,9 @@
           "photosPermission": "O aplicativo precisa de acesso à sua galeria para que você possa escolher uma foto de perfil.",
           "cameraPermission": "O aplicativo precisa de acesso à sua câmera para que você possa tirar uma nova foto de perfil."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
-
     "extra": {
       "eas": {
         "projectId": "389e3a2a-1432-4772-bde2-7077bc632da0"
